@@ -22,7 +22,6 @@
     <meta property="og:site_name" content="Focus & Insightful Timing">
     <!-- End Facebook -->
     <meta name="author" content="Andrey Belyakov">
-    <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
     <meta name="Copyright" content="Focus & Insightful Timing">
     <!-- End Meta Data -->
@@ -37,7 +36,6 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/animate.min.css">
     <!-- End CSS -->
   </head>
   <body class="animate__animated animate__fadeIn">
@@ -120,29 +118,31 @@
     <!-- End Hero Section -->
 
     <!-- To-Do List -->
-    <section id="todo-section" class="flex-center">
-      <div class="container flex-center">
-        <div class="column">
-          <p class="section-small-title">
-            Interactive To-Do List
-          </p>
-          <h2 class="section-title">
-            Take control of your schedule!
-          </h2>
-          <div id="notebook" class="flex-center">
-            <div id="input-field">
-              <input type="text" id="item-input" placeholder="Enter your task... 📌">
-              <p id="error-text" aria-live="polite"></p>
-            </div>
-            <ul id="to_do-list"></ul>
-            <div class="button-container">
-              <button type="button" id="add-button" class="dark-button">Add Task</button>
-              <button type="button" id="delete-all-button" class="dark-button">Clear List</button>
+    <main>
+      <section id="todo-section" class="flex-center">
+        <div class="container flex-center">
+          <div class="column">
+            <p class="section-small-title">
+              Interactive To-Do List
+            </p>
+            <h2 class="section-title">
+              Take control of your schedule!
+            </h2>
+            <div id="notebook" class="flex-center">
+              <div id="input-field">
+                <input type="text" id="item-input" placeholder="Enter your task... 📌">
+                <p id="error-text" aria-live="polite"></p>
+              </div>
+              <ul id="to_do-list"></ul>
+              <div class="button-container">
+                <button type="button" id="add-button" class="dark-button">Add Task</button>
+                <button type="button" id="delete-all-button" class="dark-button">Clear List</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
     <!-- End To-Do List -->
 
     <!-- Footer -->
