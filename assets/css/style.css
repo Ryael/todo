@@ -1,4 +1,3 @@
-
 /* Table of Contents */
 
 /* 01. Fonts */
@@ -30,6 +29,9 @@
   --error-color: rgb(230, 87, 87);
   --default-font: "Sora", sans-serif;
   --accent-font: "Marcellus", serif;
+  --animate-duration: 1s;
+  --animate-delay: 1s;
+  --animate-repeat: 1;
 }
 
 /* 03. Common Styles */
@@ -81,6 +83,49 @@ a {
   display: flex;
   align-content: center;
   justify-content: center;
+}
+
+.animate__animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-duration: var(--animate-duration);
+  animation-duration: var(--animate-duration);
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .animate__animated {
+    -webkit-animation-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    -webkit-animation-iteration-count: 1 !important;
+    animation-iteration-count: 1 !important;
+    -webkit-transition-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate__fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
 }
 
 /* 04. Text */
@@ -144,6 +189,7 @@ a {
 }
 
 .mobile-logo p {
+  font-size: clamp(1.45em, 1.15em + 1.3vw, 2.375em);
   margin: 0;
   color: #000;
 }
@@ -493,7 +539,7 @@ body.mobile-navigation-active .mobile-list-item:nth-child(3) {
 }
 
 #location > h1 {
-  font-size: clamp(1.2em, 0.75em + 1.5vw, 3.5em);
+  font-size: clamp(1.2em, 0.8em + 1.6vw, 3.5em);
   letter-spacing: clamp(4px, 1.5vw, 25px);
   font-weight: 400;
   position: relative;
@@ -549,7 +595,8 @@ body.mobile-navigation-active .mobile-list-item:nth-child(3) {
   cursor: pointer;
 }
 
-.delete-item-button:hover {
+.delete-item-button:hover,
+.update-item-button:hover {
   color: #919191;
   transition: all 0.5s;
 }
@@ -718,7 +765,8 @@ body.mobile-navigation-active .mobile-list-item:nth-child(3) {
   color: var(--primary-color);
 }
 
-#item-input {
+#item-input,
+.edit-task-input {
   font-family: var(--default-font);
   width: 100%;
   max-width: 360px;
@@ -753,10 +801,25 @@ body.mobile-navigation-active .mobile-list-item:nth-child(3) {
 #to_do-list li {
   display: flex;
   align-items: center;
-  gap: 0.75em;
+  justify-content: space-between;
+  gap: 0.5em;
   border-bottom: 1px solid #2179C1;
   padding: 0.625em 0.25em;
-  color: #525252;
+  max-width: 100%;
+}
+
+.task-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.checkbox,
+.update-item-button,
+.delete-item-button {
+  flex-shrink: 0;
 }
 
 .todo-actions {
@@ -774,6 +837,22 @@ body.mobile-navigation-active .mobile-list-item:nth-child(3) {
 
 #to_do-list li:first-child {
   border-top: 1px solid #2179C1;
+}
+
+.edit-task-input {
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+  margin: 0 0.25em;
+  padding: 0.25em 0.5em;
+  font-size: 0.95em;
+}
+
+.update-item-button,
+.delete-item-button {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.2s;
 }
 
 /* 10. Footer */
@@ -946,5 +1025,20 @@ footer p {
 
   #hero-list {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
   }
 }
