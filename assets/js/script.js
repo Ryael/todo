@@ -288,14 +288,18 @@ function clearAllTasks() {
 
 /* Event Listeners & Init */
 
-addButton.addEventListener("click", addTask);
+const addButton = document.getElementById("add-button");
 
-itemInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    addTask();
-  }
-});
+if (addButton) {
+  addButton.addEventListener("click", handleAddTask);
 
-deleteAllButton.addEventListener("click", clearAllTasks);
+  itemInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      addTask();
+    }
+  });
 
-loadTodoList();
+  deleteAllButton.addEventListener("click", clearAllTasks);
+
+  loadTodoList();
+}
