@@ -2,30 +2,27 @@
 
 /* 01. Navigation Bar */
 /* 02. Mobile Navigation */
-/* 03. To-Do List Storage & State */
-/* 04. Task Rendering */
-/* 05. Add New Item */
-/* 06. Toggle Completion */
-/* 07. Singular Deletion */
-/* 08. Batch Deletion */
+/* 03. To-Do List: Storage & State */
+/* 04. To-Do List: Read Task */
+/* 05. To-Do List: Create Task */
+/* 06. To-Do List: Toggle Task Completion */
+/* 07. To-Do List: Singular Task Deletion */
+/* 08. To-Do List: Update Task */
+/* 08. To-Do List: Batch Task Deletion */
 
 /* 01. Navigation Bar */
 
 const myNav = document.querySelector("#navigation-bar");
 const navMenu = document.querySelector("#navigation-menu");
-const menuLinks = navMenu ? navMenu.querySelectorAll(".navigation-link") : [];
-const colourLogo = myNav ? myNav.querySelector("#navigation-logo-colour") : null;
+const menuLinks = navMenu.querySelectorAll(".navigation-link");
+const colourLogo = myNav.querySelector("#navigation-logo-colour");
 
 // Sticky navigation bar.
 // These changes are toggled whenever the 10px threshold is scrolled past.
 function setNavbarTransparency() {
-  if (!myNav) return;
-
   const isScrolled = window.scrollY > 10;
   myNav.classList.toggle("scroll", isScrolled);
-  if (colourLogo) {
-    colourLogo.classList.toggle("black", isScrolled);
-  }
+  colourLogo.classList.toggle("black", isScrolled);
   menuLinks.forEach((link) => link.classList.toggle("black", isScrolled));
 }
 
@@ -37,25 +34,32 @@ window.addEventListener("scroll", setNavbarTransparency);
 const toggleButton = document.querySelector(".mobile-button");
 const mobileLinks = document.querySelectorAll(".mobile-links");
 
-if (toggleButton) {
-  // Keep aria-expanded synced with the mobile menu state.
-  toggleButton.addEventListener("click", () => {
-    const isOpen = document.body.classList.toggle("mobile-navigation-active");
-    toggleButton.setAttribute("aria-expanded", String(isOpen));
-  });
+// Keep aria-expanded synced with the mobile menu state.
+toggleButton.addEventListener("click", () => {
+  const isOpen = document.body.classList.toggle("mobile-navigation-active");
+  toggleButton.setAttribute("aria-expanded", isOpen);
+});
 
-  // Close mobile menu when navigating from a mobile link.
-  mobileLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      document.body.classList.remove("mobile-navigation-active");
-      toggleButton.setAttribute("aria-expanded", "false");
-    });
+// Close mobile menu when navigating from a mobile link.
+mobileLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    document.body.classList.remove("mobile-navigation-active");
+    toggleButton.setAttribute("aria-expanded", "false");
   });
-}
+});
 
-/* 03. To-Do List Storage & State */
+/* 03. To-Do List: Storage & State */
 
 const STORAGE_KEY = "focusTiming.tasks";
+const MAX_TASK_LENGTH = 35;
+
+const EXAMPLE_TASKS = [
+  { id: 1700000001001, text: "Review assessment criteria.", isDone: true },
+  { id: 1700000001002, text: "Import Comic Sans to frustrate people.", isDone: false },
+  { id: 1700000001003, text: "Maybe submit on time?", isDone: false },
+  { id: 1700000001004, text: "Max character limit is 35.", isDone: false },
+];
+
 let tasks = loadTasks();
 
 const itemInput = document.querySelector("#item-input");
@@ -68,10 +72,18 @@ function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
-// Fall back to an empty list on first visit or bad JSON.
+// Example tasks on first visit.
 function loadTasks() {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved === null) return [];
+  if (saved === null) {
+    const seeded = EXAMPLE_TASKS.map((task) => ({
+      id: task.id,
+      text: task.text,
+      isDone: task.isDone,
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+    return seeded;
+  }
 
   try {
     return JSON.parse(saved);
@@ -81,7 +93,7 @@ function loadTasks() {
   }
 }
 
-/* 04. Task Rendering */
+/* 04. To-Do List: Read Task */
 
 function createTaskItem(task) {
   const item = document.createElement("li");
@@ -101,6 +113,18 @@ function createTaskItem(task) {
   textSpan.classList.add("task-text");
   textSpan.textContent = task.text;
 
+  const updateButton = document.createElement("a");
+  updateButton.className = "update-item-button";
+  updateButton.dataset.id = task.id;
+  updateButton.href = "#";
+  updateButton.setAttribute("role", "button");
+  updateButton.setAttribute("aria-label", `Update "${task.text}"`);
+  updateButton.innerHTML = `<i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>`;
+  updateButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    startEditTask(task.id, item, textSpan);
+  });
+
   const deleteButton = document.createElement("a");
   deleteButton.className = "delete-item-button";
   deleteButton.dataset.id = task.id;
@@ -113,10 +137,9 @@ function createTaskItem(task) {
     deleteTask(task.id);
   });
 
-  item.append(checkbox, textSpan, deleteButton);
+  item.append(checkbox, textSpan, updateButton, deleteButton);
   return item;
 }
-
 
 // Redraw list from state so the page always matches tasks.
 function loadTodoList() {
@@ -134,13 +157,9 @@ function loadTodoList() {
   });
 }
 
-/* 05. Add New Item */
-
-const MAX_TASK_LENGTH = 40;
+/* 05. To-Do List: Create Task */
 
 function addTask() {
-  if (!itemInput || !errorText) return;
-
   const text = itemInput.value.trim();
   errorText.textContent = "";
 
@@ -152,7 +171,6 @@ function addTask() {
   }
 
   // Reject long entries.
-
   if (text.length > MAX_TASK_LENGTH) {
     errorText.textContent = `Task must be ${MAX_TASK_LENGTH} characters or less.`;
     itemInput.focus();
@@ -172,7 +190,7 @@ function addTask() {
   itemInput.focus();
 }
 
-/* 06. Toggle Completion */
+/* 06. To-Do List: Toggle Task Completion */
 
 function toggleTask(id) {
   const task = tasks.find((item) => item.id === id);
@@ -183,7 +201,7 @@ function toggleTask(id) {
   loadTodoList();
 }
 
-/* 07. Singular Deletion */
+/* 07. To-Do List: Singular Task Deletion */
 
 function deleteTask(id) {
   tasks = tasks.filter((task) => task.id !== id);
@@ -191,40 +209,93 @@ function deleteTask(id) {
   loadTodoList();
 }
 
-/* 08. Batch Deletion */
+/* 08. To-Do List: Update Task */
+
+function startEditTask(id, listItem, textSpan) {
+  const task = tasks.find((item) => item.id === id);
+  if (!task || !listItem || !textSpan) return;
+  if (listItem.querySelector(".edit-task-input")) return;
+
+  errorText.textContent = "";
+
+  const editInput = document.createElement("input");
+  editInput.type = "text";
+  editInput.className = "edit-task-input";
+  editInput.value = task.text;
+  editInput.maxLength = MAX_TASK_LENGTH;
+  editInput.setAttribute("aria-label", `Edit "${task.text}"`);
+
+  let isFinished = false;
+
+  function commitEdit() {
+    if (isFinished) return;
+    isFinished = true;
+
+    const updatedText = editInput.value.trim();
+
+    if (updatedText === "") {
+      errorText.textContent = "Please enter a task.";
+      loadTodoList();
+      return;
+    }
+
+    if (updatedText.length > MAX_TASK_LENGTH) {
+      errorText.textContent = `Task must be ${MAX_TASK_LENGTH} characters or less.`;
+      loadTodoList();
+      return;
+    }
+
+    task.text = updatedText;
+    errorText.textContent = "";
+    saveTasks();
+    loadTodoList();
+  }
+
+  editInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitEdit();
+    } else if (event.key === "Escape") {
+      isFinished = true;
+      loadTodoList();
+    }
+  });
+
+  // Save or cancel task update when the input loses focus.
+  editInput.addEventListener("blur", commitEdit);
+
+  textSpan.replaceWith(editInput);
+  editInput.focus();
+  editInput.select();
+}
+
+/* 08. To-Do List: Batch Task Deletion */
 
 // Prevent deletion when no items to delete.
 function clearAllTasks() {
   if (tasks.length === 0) {
-    if (errorText) errorText.textContent = "Nothing to delete.";
+    errorText.textContent = "Nothing to delete.";
     return;
   }
 
   if (!confirm("Are you sure you want to delete everything?")) return;
 
   tasks = [];
-  if (errorText) errorText.textContent = "";
+  errorText.textContent = "";
   saveTasks();
   loadTodoList();
 }
 
 /* Event Listeners & Init */
 
-if (addButton) {
-  addButton.addEventListener("click", addTask);
-}
+addButton.addEventListener("click", addTask);
 
-if (itemInput) {
-  itemInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      addTask();
-    }
-  });
-}
+itemInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    addTask();
+  }
+});
 
-if (deleteAllButton) {
-  deleteAllButton.addEventListener("click", clearAllTasks);
-}
+deleteAllButton.addEventListener("click", clearAllTasks);
 
 loadTodoList();
-
