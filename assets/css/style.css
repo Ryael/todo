@@ -455,7 +455,7 @@ body.mobile-navigation-active .mobile-list-item:nth-child(3) {
   display: block;
   position: absolute;
   inset: 0;
-  background: linear-gradient(1.91deg, rgba(38, 38, 38, 0.6) 64.59%, #262626 101.91%),
+  background: linear-gradient(1.91deg, rgba(38, 38, 38, 0.7) 64.59%, #262626 101.91%),
               linear-gradient(270deg, rgba(38, 38, 38, 0) 44.72%, #262626 117.07%),
               linear-gradient(180deg, rgba(38, 38, 38, 0) 68.75%, rgba(38, 38, 38, 0.8) 100%);
   width: 100%;
